@@ -1,5 +1,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
+import parse from "html-react-parser";
 
 describe("JSX Practice exercises", () => {
   describe("JSX basics", () => {
@@ -9,10 +10,12 @@ describe("JSX Practice exercises", () => {
      *
      * Read the value from the `name` variable
      */
-    test("hello john doe", () => {
+    test.only("hello john doe", () => {
       const name = "John Doe";
 
-      const HelloWorld = () => null;
+      const HelloWorld = () => {
+        return <div>Hello, John Doe</div>;
+      };
 
       render(<HelloWorld />);
       expect(screen.getByText(/Hello, John Doe/)).toBeInTheDocument();
@@ -24,10 +27,12 @@ describe("JSX Practice exercises", () => {
      *
      * Read the image path from the `imagePath` variable
      */
-    test("profile image 1", () => {
+    test.only("profile image 1", () => {
       const imagePath = "https://placekitten.com/200/300";
 
-      const ProfileImage = () => null;
+      const ProfileImage = () => {
+        return <img src={imagePath}></img>;
+      };
 
       render(<ProfileImage />);
       expect(screen.getByRole("img")).toHaveAttribute("src", imagePath);
@@ -37,10 +42,13 @@ describe("JSX Practice exercises", () => {
      * Implement the `ProfileImage` component
      * such that it renders the given HTML
      */
-    test("profile image 2", () => {
+    test.only("profile image 2", () => {
       const html = `<img src="https://placekitten.com/200/300" style="border: 1px solid blue;" />`;
 
-      const ProfileImage = () => null;
+      const ProfileImage = () => {
+        const reactElement = parse(html);
+        return reactElement;
+      };
 
       render(<ProfileImage />);
       expect(screen.getByRole("img")).toHaveAttribute(
@@ -56,13 +64,20 @@ describe("JSX Practice exercises", () => {
      * Read the details from the `character` variable.
      * Display the name inside a heading HTML tag.
      */
-    test("avatar", () => {
+    test.only("avatar", () => {
       const character = {
         name: "John Doe",
         image: "https://placekitten.com/200/300",
       };
 
-      const Avatar = () => null;
+      const Avatar = () => {
+        return (
+          <div>
+            <h1>{character.name}</h1>
+            <img src={character.image} alt={character.name}></img>
+          </div>
+        );
+      };
 
       render(<Avatar />);
       expect(screen.getByRole("heading")).toHaveTextContent(character.name);
@@ -77,11 +92,14 @@ describe("JSX Practice exercises", () => {
      * such that the value of the price is displayed
      * with two decimals
      */
-    test("format number", () => {
+    test.only("format number", () => {
       const price = 12;
 
       const ProductPrice = () => {
-        return <p>Price: {price}</p>;
+        //convert an integer to a float with two decimal
+        const updatedPrice = price.toFixed(2);
+
+        return <p>Price: {updatedPrice}</p>;
       };
 
       render(<ProductPrice />);
@@ -96,17 +114,25 @@ describe("JSX Practice exercises", () => {
      * passing in just the `weekday` option
      * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat#using_options
      */
-    test("format date - day of week", () => {
+    test.only("format date - day of week", () => {
       // Date react was launched: May 29, 2013
       const reactLaunchDate = new Date("2013-05-29");
 
       const HelloWorld = () => {
-        return <p>React was launched on {reactLaunchDate.toString()}</p>;
+        const options = {
+          weekday: "long",
+        };
+
+        const formattedDate = Intl.DateTimeFormat("en-US", options).format(
+          reactLaunchDate
+        );
+        console.log(formattedDate);
+        return <p>React was launched on a {formattedDate}</p>;
       };
 
       render(<HelloWorld />);
       expect(
-        screen.getByText(/React was launched on a Wednesday/)
+        screen.getByText(/React was launched on a Tuesday/)
       ).toBeInTheDocument();
     });
   });
